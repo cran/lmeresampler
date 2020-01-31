@@ -53,9 +53,8 @@ case_bootstrap.lmerMod <- function (model, fn, B, resample){
   if(length(clusters) != length(resample))
     stop("'resample' is not the same length as the number of grouping variables. Please specify whether to resample the data at each level of grouping.")
   
-  # DEPRECATED rep.data <- as.data.frame( replicate(n = B, .cases.resamp(model = model, extra_step = extra_step)) )
-  # rep.data <- lapply(integer(B), eval.parent(substitute(function(...) .cases.resamp(dat = data, cluster = clusters, resample = resample))))
   rep.data <- lapply(integer(B), function(x) .cases.resamp(dat = data, cluster = clusters, resample = resample))
+  
   # Plugin to .cases.completion due to small changes
   RES <- .cases.completion(model, rep.data, B, fn)
   return(RES)
@@ -88,16 +87,18 @@ case_bootstrap.lmerMod <- function (model, fn, B, resample){
   if(nrow(dat) == 1 || all(resample==FALSE))
     return(dat)
   
+  # ver <- as.numeric_version(packageVersion("dplyr"))
   res <- dat
   
   for(i in 1:length(cluster)) {
     
     if(i==1 & resample[i]) {
       dots <- cluster[1]
-      grouped <- dplyr::group_by_(res, .dots = dots)
-      ats <- attributes(grouped)
-      cls <- sample(seq_along(ats$indices), replace = resample[i])
-      idx <- unlist(ats$indices[cls], recursive = FALSE) + 1 # b/c 0 based
+      grouped <- dplyr::group_by_(res, dots)
+      g_rows <- dplyr::group_rows(grouped)
+      # g_rows <- ifelse(ver >= "0.8.0", dplyr::group_rows(grouped), attributes(grouped)$indices)
+      cls <- sample(seq_along(g_rows), replace = resample[i])
+      idx <- unlist(g_rows[cls], recursive = FALSE)
       res <- res[idx, ]
     } else{
       if(i == length(cluster) & resample[i]) {
@@ -110,9 +111,10 @@ case_bootstrap.lmerMod <- function (model, fn, B, resample){
           res <- split(res, res[, cluster[1:(i-1)]], drop = TRUE)
           res <- plyr::ldply(res, function(df) {
             grouped <- dplyr::group_by_(df, .dots = dots)
-            ats <- attributes(grouped)
-            cls <- sample(seq_along(ats$indices), replace = resample[i])
-            idx <- unlist(ats$indices[cls], recursive = FALSE) + 1 # b/c 0 based
+            g_rows <- dplyr::group_rows(grouped)
+            # g_rows <- ifelse(ver >= "0.8.0", dplyr::group_rows(grouped), attributes(grouped)$indices)
+            cls <- sample(seq_along(g_rows), replace = resample[i])
+            idx <- unlist(g_rows[cls], recursive = FALSE)
             grouped[idx, ]
           }, .id = NULL)
         }
@@ -282,6 +284,8 @@ reb_bootstrap.lmerMod <- function (model, fn, B, reb_type = 0){
 #' @param zstar A list of matrices zstar
 #'
 #' @return matrix
+#' @keywords internal
+#' @noRd
 .Zbstar.combine <- function(bstar, zstar){
   lapply(1:length(bstar), function(i){
     Matrix::t(zstar[[i]]) %*% bstar[[i]]
@@ -302,6 +306,8 @@ reb_bootstrap.lmerMod <- function (model, fn, B, reb_type = 0){
 #' @inheritParams bootstrap
 #'
 #' @return list
+#' @keywords internal
+#' @noRd
 .bootstrap.completion <- function(model, ystar, B, fn){
   t0 <- fn(model)
 
@@ -326,13 +332,13 @@ reb_bootstrap.lmerMod <- function (model, fn, B, reb_type = 0){
                    class = "boot")
   attr(RES,"bootFail") <- nfail
   attr(RES,"boot.fail.msgs") <- fail.msgs
+  attr(RES,"boot_type") <- "boot"
   return(RES)
 }
 
 #' CGR resampling procedures
-#' 
-#'
-#' @inheritParams bootstrap
+#' @keywords internal
+#' @noRd
 .resample.cgr <- function(model){
   model.ranef <- lme4::ranef(model)
   
@@ -362,7 +368,7 @@ reb_bootstrap.lmerMod <- function (model, fn, B, reb_type = 0){
   # Level 1
   e <- as.numeric(scale(model.resid, scale = FALSE))
   sigma <- lme4::getME(model, "sigma")
-  ehat <- sigma * e * ((t(e)%*%e) / length(e))^(-1/2)
+  ehat <- sigma * e * as.numeric((t(e)%*%e) / length(e))^(-1/2)
   
   # Extract Z design matrix
   Z <- lme4::getME(object = model, name = "Ztlist")
@@ -405,8 +411,8 @@ reb_bootstrap.lmerMod <- function (model, fn, B, reb_type = 0){
 }
 
 #' Resampling residuals from mixed models
-#'
-#' @inheritParams bootstrap
+#' @keywords internal
+#' @noRd
 .resample.resids <- function(model){
   
   # Extract fixed part of the model
@@ -462,6 +468,8 @@ reb_bootstrap.lmerMod <- function (model, fn, B, reb_type = 0){
 #' @param reb_type Specifies the inclusion of REB/1
 #' @inheritParams bootstrap
 #' @import Matrix
+#' @keywords internal
+#' @noRd
 .resample.reb <- function(model, reb_type){
   # extract marginal residuals
   model.mresid <- lme4::getME(model, "y") - predict(model, re.form = NA)

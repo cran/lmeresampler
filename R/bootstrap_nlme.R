@@ -88,6 +88,7 @@ parametric_bootstrap.lme <- function(model, fn, B){
                    class = "boot")
   attr(RES, "bootFail") <- numFail
   attr(RES, "boot.fail.msgs") <- fail.msgs
+  attr(RES,"boot_type") <- "boot"
   return(RES)
 }
 
@@ -106,7 +107,8 @@ case_bootstrap.lme <- function (model, fn, B, resample){
   
   t0 <- fn(model)
   
-  rep.data <- lapply(integer(B), eval.parent(substitute(function(...) .cases.resamp(dat = data, cluster = clusters, resample = resample))))
+  # rep.data <- lapply(integer(B), eval.parent(substitute(function(...) .cases.resamp(dat = data, cluster = clusters, resample = resample))))
+  rep.data <- lapply(integer(B), function(x) .cases.resamp(dat = data, cluster = clusters, resample = resample))
   
   res <- lapply(rep.data, function(df) {
     fit <- tryCatch(fn(updated.model(model = model, new.data = df)),  
@@ -183,7 +185,8 @@ resid_bootstrap.lme <- function (model, fn, B){
   return(RES)
 }
 
-
+#' @keywords internal
+#' @noRd
 .resample.resids.lme <- function(model){
   
   # Extract fixed part of the model
@@ -268,6 +271,7 @@ resid_bootstrap.lme <- function (model, fn, B){
 
 
 #' @rdname reb_bootstrap
+#' @inheritParams bootstrap
 #' @export
 reb_bootstrap.lme <- function (model, fn, B, reb_type = 0){
   
@@ -361,6 +365,8 @@ reb_bootstrap.lme <- function (model, fn, B, reb_type = 0){
 
 #' REB resampling procedures
 #' @importFrom RLRsim extract.lmeDesign
+#' @keywords internal
+#' @noRd
 .resample.reb.lme <- function(model, reb_type){
   
   dsgn <- RLRsim::extract.lmeDesign(model)
@@ -458,6 +464,7 @@ reb_bootstrap.lme <- function (model, fn, B, reb_type = 0){
 
 
 #' @rdname cgr_bootstrap
+#' @inheritParams bootstrap
 #' @export
 cgr_bootstrap.lme <- function (model, fn, B){
   fn <- match.fun(fn)
@@ -498,6 +505,8 @@ cgr_bootstrap.lme <- function (model, fn, B){
 }
 
 #' CGR resampling procedures
+#' @keywords internal
+#' @noRd
 .resample.cgr.lme <- function(model){
   level.num <- ncol(model$groups)
   
@@ -537,7 +546,7 @@ cgr_bootstrap.lme <- function (model, fn, B){
   
   # Level 1
   e <- as.numeric(scale(model.resid, scale = FALSE))
-  ehat <- sigma * e * ((t(e) %*% e) / length(e))^(-1/2)
+  ehat <- sigma * e * as.numeric((t(e) %*% e) / length(e))^(-1/2)
   
   # Resample Uhat
   ustar <- lapply(Uhat.list,
