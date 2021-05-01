@@ -1,10 +1,4 @@
 library(lme4)
-library(boot)
-library(mlmRev)
-
-Socatt$religion <- relevel(Socatt$religion, ref = "none")
-Socatt$rv <- as.numeric(as.character(Socatt$numpos))
-Socatt$rv <- scale(Socatt$rv) # a plot shows this is clearly non-normal
 
 # ==============================================================================
 context("REB bootstrap type = 0 (lmerMod)")
@@ -25,15 +19,16 @@ test_that("two-level additive random intercept model",{
   
   orig.stats <- mySumm(vcmodA)
   
-  boo <- reb_bootstrap(model = vcmodA, fn = mySumm, B = nsim)
+  boo <- reb_bootstrap(model = vcmodA, .f = mySumm, B = nsim, reb_type = 0)
   
-  expect_equal(class(boo), "boot")
-  expect_equal(boo$t0, orig.stats)
-  expect_equal(nrow(boo$t), nsim)
-  expect_equal(ncol(boo$t), length(orig.stats))
-  expect_equal(boo$R, nsim)
-  expect_equal(boo$sim, "reb")
-  expect_equal(boo$statistic, mySumm)
+  expect_equal(class(boo), "lmeresamp")
+  expect_equal(boo$observed, orig.stats)   
+  expect_equal(unname(boo$stats$observed), unname(orig.stats))
+  expect_equal(nrow(boo$replicates), nsim)
+  expect_equal(ncol(boo$replicates), length(orig.stats))
+  expect_equal(boo$B, nsim)
+  expect_equal(boo$type, "reb0")
+  expect_equal(boo$.f, mySumm)
 })
 
 # ------------------------------------------------------------------------------
@@ -44,15 +39,16 @@ test_that("two-level random intercept model without interaction",{
                   (1 | school), data = jsp728)
   
   orig.stats <- mySumm(rimod)
-  boo <- reb_bootstrap(model = rimod, fn = mySumm, B = nsim)
+  boo <- reb_bootstrap(model = rimod, .f = mySumm, B = nsim, reb_type = 0)
   
-  expect_equal(class(boo), "boot")
-  expect_equal(boo$t0, orig.stats)
-  expect_equal(nrow(boo$t), nsim)
-  expect_equal(ncol(boo$t), length(orig.stats))
-  expect_equal(boo$R, nsim)
-  expect_equal(boo$sim, "reb")
-  expect_equal(boo$statistic, mySumm)
+  expect_equal(class(boo), "lmeresamp")
+  expect_equal(boo$observed, orig.stats)   
+  expect_equal(unname(boo$stats$observed), unname(orig.stats))
+  expect_equal(nrow(boo$replicates), nsim)
+  expect_equal(ncol(boo$replicates), length(orig.stats))
+  expect_equal(boo$B, nsim)
+  expect_equal(boo$type, "reb0")
+  expect_equal(boo$.f, mySumm)
 })
 
 test_that("two-level random intercept model with interaction",{
@@ -62,15 +58,16 @@ test_that("two-level random intercept model with interaction",{
                    (1 | school), data = jsp728)
   
   orig.stats <- mySumm(vcmodC)
-  boo <- reb_bootstrap(model = vcmodC, fn = mySumm, B = nsim)
+  boo <- reb_bootstrap(model = vcmodC, .f = mySumm, B = nsim, reb_type = 0)
   
-  expect_equal(class(boo), "boot")
-  expect_equal(boo$t0, orig.stats)
-  expect_equal(nrow(boo$t), nsim)
-  expect_equal(ncol(boo$t), length(orig.stats))
-  expect_equal(boo$R, nsim)
-  expect_equal(boo$sim, "reb")
-  expect_equal(boo$statistic, mySumm)
+  expect_equal(class(boo), "lmeresamp")
+  expect_equal(boo$observed, orig.stats)   
+  expect_equal(unname(boo$stats$observed), unname(orig.stats))
+  expect_equal(nrow(boo$replicates), nsim)
+  expect_equal(ncol(boo$replicates), length(orig.stats))
+  expect_equal(boo$B, nsim)
+  expect_equal(boo$type, "reb0")
+  expect_equal(boo$.f, mySumm)
 })
 
 # ------------------------------------------------------------------------------
@@ -81,15 +78,16 @@ test_that("two-level random coefficient model with interaction",{
                   (mathAge8c | school), data = jsp728)
   
   orig.stats <- mySumm(rcmod)
-  boo <- reb_bootstrap(model = rcmod, fn = mySumm, B = nsim)
+  boo <- reb_bootstrap(model = rcmod, .f = mySumm, B = nsim, reb_type = 0)
   
-  expect_equal(class(boo), "boot")
-  expect_equal(boo$t0, orig.stats)
-  expect_equal(nrow(boo$t), nsim)
-  expect_equal(ncol(boo$t), length(orig.stats))
-  expect_equal(boo$R, nsim)
-  expect_equal(boo$sim, "reb")
-  expect_equal(boo$statistic, mySumm)
+  expect_equal(class(boo), "lmeresamp")
+  expect_equal(boo$observed, orig.stats)   
+  expect_equal(unname(boo$stats$observed), unname(orig.stats))
+  expect_equal(nrow(boo$replicates), nsim)
+  expect_equal(ncol(boo$replicates), length(orig.stats))
+  expect_equal(boo$B, nsim)
+  expect_equal(boo$type, "reb0")
+  expect_equal(boo$.f, mySumm)
 })
 
 # ------------------------------------------------------------------------------
@@ -97,7 +95,7 @@ test_that("two-level random coefficient model with interaction",{
 # rmA <- lmer(rv ~ religion + year  + (1 | respond) + (1 | district), data = Socatt)
 # 
 # orig.stats <- mySumm(rmA)
-# boo <- try(reb_bootstrap(model = rmA, fn = mySumm, B = nsim))
+# boo <- try(reb_bootstrap(model = rmA, .f = mySumm, B = nsim))
 # 
 # 
 # test_that("three-level random intercept model",{
@@ -124,15 +122,16 @@ test_that("two-level additive random intercept model",{
   
   nsim <- 10
   
-  boo <- reb_bootstrap(model = vcmodA, fn = mySumm, B = nsim, reb_type = 1)
+  boo <- reb_bootstrap(model = vcmodA, .f = mySumm, B = nsim, reb_type = 1)
   
-  expect_equal(class(boo), "boot")
-  expect_equal(boo$t0, orig.stats)
-  expect_equal(nrow(boo$t), nsim)
-  expect_equal(ncol(boo$t), length(orig.stats))
-  expect_equal(boo$R, nsim)
-  expect_equal(boo$sim, "reb")
-  expect_equal(boo$statistic, mySumm)
+  expect_equal(class(boo), "lmeresamp")
+  expect_equal(boo$observed, orig.stats)   
+  expect_equal(unname(boo$stats$observed), unname(orig.stats))
+  expect_equal(nrow(boo$replicates), nsim)
+  expect_equal(ncol(boo$replicates), length(orig.stats))
+  expect_equal(boo$B, nsim)
+  expect_equal(boo$type, "reb1")
+  expect_equal(boo$.f, mySumm)
 })
 
 # ------------------------------------------------------------------------------
@@ -144,15 +143,16 @@ test_that("two-level random intercept model without interaction",{
                   (1 | school), data = jsp728)
   
   orig.stats <- mySumm(rimod)
-  boo <- reb_bootstrap(model = rimod, fn = mySumm, B = nsim, reb_type = 1)
+  boo <- reb_bootstrap(model = rimod, .f = mySumm, B = nsim, reb_type = 1)
   
-  expect_equal(class(boo), "boot")
-  expect_equal(boo$t0, orig.stats)
-  expect_equal(nrow(boo$t), nsim)
-  expect_equal(ncol(boo$t), length(orig.stats))
-  expect_equal(boo$R, nsim)
-  expect_equal(boo$sim, "reb")
-  expect_equal(boo$statistic, mySumm)
+  expect_equal(class(boo), "lmeresamp")
+  expect_equal(boo$observed, orig.stats)   
+  expect_equal(unname(boo$stats$observed), unname(orig.stats))
+  expect_equal(nrow(boo$replicates), nsim)
+  expect_equal(ncol(boo$replicates), length(orig.stats))
+  expect_equal(boo$B, nsim)
+  expect_equal(boo$type, "reb1")
+  expect_equal(boo$.f, mySumm)
 })
 
 
@@ -163,15 +163,16 @@ test_that("two-level random intercept model with interaction",{
                    (1 | school), data = jsp728)
   
   orig.stats <- mySumm(vcmodC)
-  boo <- reb_bootstrap(model = vcmodC, fn = mySumm, B = nsim, reb_type = 1)
+  boo <- reb_bootstrap(model = vcmodC, .f = mySumm, B = nsim, reb_type = 1)
   
-  expect_equal(class(boo), "boot")
-  expect_equal(boo$t0, orig.stats)
-  expect_equal(nrow(boo$t), nsim)
-  expect_equal(ncol(boo$t), length(orig.stats))
-  expect_equal(boo$R, nsim)
-  expect_equal(boo$sim, "reb")
-  expect_equal(boo$statistic, mySumm)
+  expect_equal(class(boo), "lmeresamp")
+  expect_equal(boo$observed, orig.stats)   
+  expect_equal(unname(boo$stats$observed), unname(orig.stats))
+  expect_equal(nrow(boo$replicates), nsim)
+  expect_equal(ncol(boo$replicates), length(orig.stats))
+  expect_equal(boo$B, nsim)
+  expect_equal(boo$type, "reb1")
+  expect_equal(boo$.f, mySumm)
 })
 
 # ------------------------------------------------------------------------------
@@ -183,15 +184,16 @@ test_that("two-level random coefficient model with interaction",{
                   (mathAge8c | school), data = jsp728)
   
   orig.stats <- mySumm(rcmod)
-  boo <- reb_bootstrap(model = rcmod, fn = mySumm, B = nsim, reb_type = 1)
+  boo <- reb_bootstrap(model = rcmod, .f = mySumm, B = nsim, reb_type = 1)
   
-  expect_equal(class(boo), "boot")
-  expect_equal(boo$t0, orig.stats)
-  expect_equal(nrow(boo$t), nsim)
-  expect_equal(ncol(boo$t), length(orig.stats))
-  expect_equal(boo$R, nsim)
-  expect_equal(boo$sim, "reb")
-  expect_equal(boo$statistic, mySumm)
+  expect_equal(class(boo), "lmeresamp")
+  expect_equal(boo$observed, orig.stats)   
+  expect_equal(unname(boo$stats$observed), unname(orig.stats))
+  expect_equal(nrow(boo$replicates), nsim)
+  expect_equal(ncol(boo$replicates), length(orig.stats))
+  expect_equal(boo$B, nsim)
+  expect_equal(boo$type, "reb1")
+  expect_equal(boo$.f, mySumm)
 })
 
 # ------------------------------------------------------------------------------
@@ -199,7 +201,7 @@ test_that("two-level random coefficient model with interaction",{
 # rmA <- lmer(rv ~ religion + year  + (1 | respond) + (1 | district), data = Socatt)
 # 
 # orig.stats <- mySumm(rmA)
-# boo <- reb_bootstrap(model = rmA, fn = mySumm, B = nsim, reb_type = 1)
+# boo <- reb_bootstrap(model = rmA, .f = mySumm, B = nsim, reb_type = 1)
 # 
 # 
 # test_that("three-level random intercept model",{
@@ -207,7 +209,7 @@ test_that("two-level random coefficient model with interaction",{
 #   expect_equal(boo$t0, orig.stats)
 #   expect_equal(nrow(boo$t), nsim)
 #   expect_equal(ncol(boo$t), length(orig.stats))
-#   expect_equal(boo$R, nsim)
+#   expect_equal(boo$B, nsim)
 #   expect_equal(boo$sim, "reb")
 #   expect_equal(boo$statistic, mySumm)
 # })
@@ -226,19 +228,19 @@ test_that("two-level additive random intercept model",{
   vcmodA <- lmer(mathAge11 ~ mathAge8 + gender + class + 
                    (1 | school), data = jsp728)
   
-  orig.stats <- mySumm(vcmodA)
+  orig.stats <- extract_parameters(vcmodA)
   
   nsim <- 10
   
-  boo <- reb_bootstrap(model = vcmodA, fn = mySumm, B = nsim, reb_type = 2)
+  boo <- reb_bootstrap(model = vcmodA, .f = extract_parameters, B = nsim, reb_type = 2)
   
-  expect_equal(class(boo), "boot")
-  expect_equal(boo$t0, orig.stats)
-  expect_equal(nrow(boo$t), nsim)
-  expect_equal(ncol(boo$t), length(orig.stats))
-  expect_equal(boo$R, nsim)
-  expect_equal(boo$sim, "reb")
-  expect_equal(boo$statistic, mySumm)
+  expect_equal(class(boo), "lmeresamp")
+  expect_equal(boo$observed, orig.stats)   
+  expect_equal(unname(boo$stats$observed), unname(orig.stats))
+  expect_equal(nrow(boo$replicates), nsim)
+  expect_equal(ncol(boo$replicates), length(orig.stats))
+  expect_equal(boo$B, nsim)
+  expect_equal(boo$type, "reb2")
 })
 
 # ------------------------------------------------------------------------------
@@ -248,16 +250,16 @@ test_that("two-level random intercept model without interaction",{
   rimod <- lmer(normAge11 ~ mathAge8c + gender + class + 
                   (1 | school), data = jsp728)
   
-  orig.stats <- mySumm(rimod)
-  boo <- reb_bootstrap(model = rimod, fn = mySumm, B = nsim, reb_type = 2)
+  orig.stats <- extract_parameters(rimod)
+  boo <- reb_bootstrap(model = rimod, .f = extract_parameters, B = nsim, reb_type = 2)
   
-  expect_equal(class(boo), "boot")
-  expect_equal(boo$t0, orig.stats)
-  expect_equal(nrow(boo$t), nsim)
-  expect_equal(ncol(boo$t), length(orig.stats))
-  expect_equal(boo$R, nsim)
-  expect_equal(boo$sim, "reb")
-  expect_equal(boo$statistic, mySumm)
+  expect_equal(class(boo), "lmeresamp")
+  expect_equal(boo$observed, orig.stats)   
+  expect_equal(unname(boo$stats$observed), unname(orig.stats))
+  expect_equal(nrow(boo$replicates), nsim)
+  expect_equal(ncol(boo$replicates), length(orig.stats))
+  expect_equal(boo$B, nsim)
+  expect_equal(boo$type, "reb2")
 })
 
 
@@ -267,16 +269,16 @@ test_that("two-level random intercept model with interaction",{
   vcmodC <- lmer(mathAge11 ~ mathAge8 * schoolMathAge8 + gender + class + 
                    (1 | school), data = jsp728)
   
-  orig.stats <- mySumm(vcmodC)
-  boo <- reb_bootstrap(model = vcmodC, fn = mySumm, B = nsim, reb_type = 2)
+  orig.stats <- extract_parameters(vcmodC)
+  boo <- reb_bootstrap(model = vcmodC, .f = mySumm, B = nsim, reb_type = 2)
   
-  expect_equal(class(boo), "boot")
-  expect_equal(boo$t0, orig.stats)
-  expect_equal(nrow(boo$t), nsim)
-  expect_equal(ncol(boo$t), length(orig.stats))
-  expect_equal(boo$R, nsim)
-  expect_equal(boo$sim, "reb")
-  expect_equal(boo$statistic, mySumm)
+  expect_equal(class(boo), "lmeresamp")
+  expect_equal(boo$observed, orig.stats)   
+  expect_equal(unname(boo$stats$observed), unname(orig.stats))
+  expect_equal(nrow(boo$replicates), nsim)
+  expect_equal(ncol(boo$replicates), length(orig.stats))
+  expect_equal(boo$B, nsim)
+  expect_equal(boo$type, "reb2")
 })
 
 # ------------------------------------------------------------------------------
@@ -287,16 +289,16 @@ test_that("two-level random coefficient model with interaction",{
   rcmod <- lmer(mathAge11 ~ mathAge8c * schoolMathAge8 + gender + class + 
                   (mathAge8c | school), data = jsp728)
   
-  orig.stats <- mySumm(rcmod)
-  boo <- reb_bootstrap(model = rcmod, fn = mySumm, B = nsim, reb_type = 2)
+  orig.stats <- extract_parameters(rcmod)
+  boo <- reb_bootstrap(model = rcmod, .f = extract_parameters, B = nsim, reb_type = 2)
   
-  expect_equal(class(boo), "boot")
-  expect_equal(boo$t0, orig.stats)
-  expect_equal(nrow(boo$t), nsim)
-  expect_equal(ncol(boo$t), length(orig.stats))
-  expect_equal(boo$R, nsim)
-  expect_equal(boo$sim, "reb")
-  expect_equal(boo$statistic, mySumm)
+  expect_equal(class(boo), "lmeresamp")
+  expect_equal(boo$observed, orig.stats)   
+  expect_equal(unname(boo$stats$observed), unname(orig.stats))
+  expect_equal(nrow(boo$replicates), nsim)
+  expect_equal(ncol(boo$replicates), length(orig.stats))
+  expect_equal(boo$B, nsim)
+  expect_equal(boo$type, "reb2")
 })
 
 # ------------------------------------------------------------------------------
@@ -304,7 +306,7 @@ test_that("two-level random coefficient model with interaction",{
 # rmA <- lmer(rv ~ religion + year  + (1 | respond) + (1 | district), data = Socatt)
 # 
 # orig.stats <- mySumm(rmA)
-# boo <- reb_bootstrap(model = rmA, fn = mySumm, B = nsim, reb_type = 2)
+# boo <- reb_bootstrap(model = rmA, .f = mySumm, B = nsim, reb_type = 2)
 # 
 # 
 # test_that("three-level random intercept model",{
@@ -312,7 +314,7 @@ test_that("two-level random coefficient model with interaction",{
 #   expect_equal(boo$t0, orig.stats)
 #   expect_equal(nrow(boo$t), nsim)
 #   expect_equal(ncol(boo$t), length(orig.stats))
-#   expect_equal(boo$R, nsim)
-#   expect_equal(boo$sim, "reb")
+#   expect_equal(boo$B, nsim)
+#   expect_equal(boo$sim, "reb2")
 #   expect_equal(boo$statistic, mySumm)
 # })

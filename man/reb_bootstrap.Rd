@@ -7,16 +7,16 @@
 \alias{reb_bootstrap}
 \title{REB Bootstrap for Two-Level Nested LMEs}
 \usage{
-\method{reb_bootstrap}{lmerMod}(model, fn, B, reb_type = 0)
+\method{reb_bootstrap}{lmerMod}(model, .f, B, reb_type)
 
-\method{reb_bootstrap}{lme}(model, fn, B, reb_type = 0)
+\method{reb_bootstrap}{lme}(model, .f, B, reb_type)
 
-reb_bootstrap(model, fn, B, reb_type = 0)
+reb_bootstrap(model, .f, B, reb_type)
 }
 \arguments{
 \item{model}{The model object you wish to bootstrap.}
 
-\item{fn}{A function returning the statistic(s) of interest.}
+\item{.f}{A function returning the statistic(s) of interest.}
 
 \item{B}{The number of bootstrap resamples.}
 
@@ -24,8 +24,7 @@ reb_bootstrap(model, fn, B, reb_type = 0)
 implement. Possible values are \code{0}, \code{1} or \code{2}.}
 }
 \value{
-The returned value is an object of class "boot", compatible with the \pkg{boot}
-package's \code{\link[boot]{boot}} methods.
+The returned value is an object of class "lmeresamp".
 }
 \description{
 Generate random effect block (REB) bootstrap replicates of a statistic for a 
@@ -45,12 +44,14 @@ The REB bootstrap algorithm (\code{type = 0}) is as follows:
      \item predicted random effects \eqn{\tilde{b} = (Z^\prime Z)^{-1} Z^\prime r}
      \item error terms \eqn{\tilde{e} = r - Z \tilde{b}}
   }
-  \item Take a simple random sample with replacement of the groups and extract
-     the corresponding elements of \eqn{\tilde{b}} and \eqn{tilde{e}}.
+  \item Take a simple random sample, with replacement, of the predicted random effects, \eqn{\tilde{b}}.
+  \item Draw a simple random sample, with replacement, of the group (cluster) IDs.
+      For each sampled cluster, draw a random sample, with replacement, of size 
+      \eqn{n_i} from that cluster's vector of error terms, \eqn{\tilde{e}}.
   \item Generate bootstrap samples via the fitted model equation 
      \eqn{y = X \widehat{\beta} + Z \tilde{b} + \tilde{e}}
   \item Refit the model and extract the statistic(s) of interest.
-  \item Repeat steps 2-4 B times.
+  \item Repeat steps 2-5 B times.
 }
 
 Variation 1 (\code{type = 1}): 
@@ -68,12 +69,11 @@ Chambers, R. and Chandra, H. (2013) A random effect block bootstrap for
 }
 \seealso{
 \itemize{
+  \item Examples are given in \code{\link{bootstrap}}
   \item \code{\link{parametric_bootstrap}}, \code{\link{resid_bootstrap}},
-     \code{\link{case_bootstrap}}, \code{\link{cgr_bootstrap}}, 
-     \code{\link{reb_bootstrap}} for more details on a specific bootstrap.
+     \code{\link{case_bootstrap}}, \code{\link{reb_bootstrap}}, 
+     \code{\link{wild_bootstrap}} for more details on a specific bootstrap.
   \item \code{\link[lme4]{bootMer}} in the \pkg{lme4} package for an 
      implementation of (semi-)parameteric bootstrap for mixed models.
-  \item \code{\link[boot]{boot}}, \code{\link[boot]{boot.ci}}, and \code{\link[boot]{plot.boot}} 
-     from the \pkg{boot} package.
 }
 }
