@@ -1,3 +1,15 @@
+0.2.1
+===========
+
+* Unarchiving from CRAN
+
+DEPENDENCY CHANGE
+* Remove `catchr` dependency to avoid issues on CRAN
+
+BUG FIXES
+* message/error/warning summarization in `summary.lmeresamp` has been fixed
+* If `var` is omitted from `plot.lmeresamp()` a halfeye plot with all terms is created.
+
 0.2.0
 =====
 

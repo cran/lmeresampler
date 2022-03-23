@@ -92,7 +92,7 @@ mySumm <- function(.) {
 
 ## running a parametric bootstrap 
 set.seed(1234)
-boo1 <- bootstrap(model = vcmodA, .f = mySumm, type = "parametric", B = 100)
+boo1 <- bootstrap(model = vcmodA, .f = mySumm, type = "parametric", B = 20)
 
 \dontrun{
 ## running a cases bootstrap - only resampling the schools
@@ -100,9 +100,6 @@ boo2 <- bootstrap(model = vcmodA, .f = mySumm, type = "case", B = 100, resample 
 
 ## running a cases bootstrap - resampling the schools and students within the school
 boo2 <- bootstrap(model = vcmodA, .f = mySumm, type = "case", B = 100, resample = c(TRUE, FALSE))
-
-## running a semi-parametric bootstrap
-boo3 <- bootstrap(model = vcmodA, .f = mySumm, type = "cgr", B = 100)
 
 ## running a residual bootstrap
 boo4 <- bootstrap(model = vcmodA, .f = mySumm, type = "residual", B = 100)
@@ -147,6 +144,6 @@ Carpenter, J. R., Goldstein, H. and Rasbash, J. (2003) A novel bootstrap
      \code{\link{case_bootstrap}}, \code{\link{reb_bootstrap}}, 
      \code{\link{wild_bootstrap}} for more details on a specific bootstrap.
   \item \code{\link[lme4]{bootMer}} in the \pkg{lme4} package for an 
-     implementation of (semi-)parameteric bootstrap for mixed models.
+     implementation of (semi-)parametric bootstrap for mixed models.
 }
 }

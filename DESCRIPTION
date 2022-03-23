@@ -1,6 +1,6 @@
 Package: lmeresampler
 Title: Bootstrap Methods for Nested Linear Mixed-Effects Models
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: c(person("Adam", "Loy", email = "loyad01@gmail.com",
     role = c("aut", "cre")), person("Spenser", "Steele", role = "aut"), 
     person("Jenna", "Korobova", role = "aut"))
@@ -12,8 +12,8 @@ Description: Bootstrap routines for nested linear mixed effects models fit using
     Carpenter, Goldstein & Rasbash (2003) <doi: 10.1111/1467-9876.00415>,
     and Chambers & Chandra (2013) <doi: 10.1080/10618600.2012.681216>.
 Depends: R (>= 3.5.0)
-Imports: catchr, dplyr (>= 0.8.0), Matrix, nlmeU, ggplot2, ggdist,
-        HLMdiag, purrr, forcats, stats, statmod, magrittr
+Imports: dplyr (>= 0.8.0), Matrix, nlmeU, ggplot2, ggdist, HLMdiag,
+        purrr, forcats, stats, statmod, tidyr, magrittr
 Suggests: lme4 (>= 1.1-7), nlme, testthat, mlmRev, knitr, rmarkdown,
         doParallel, foreach
 License: GPL-3
@@ -24,10 +24,10 @@ RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2021-05-01 15:50:29 UTC; aloy
+Packaged: 2022-03-22 21:39:07 UTC; aloy
 Author: Adam Loy [aut, cre],
   Spenser Steele [aut],
   Jenna Korobova [aut]
 Maintainer: Adam Loy <loyad01@gmail.com>
 Repository: CRAN
-Date/Publication: 2021-05-01 16:20:02 UTC
+Date/Publication: 2022-03-23 10:00:11 UTC
