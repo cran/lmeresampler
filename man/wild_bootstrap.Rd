@@ -7,11 +7,25 @@
 \alias{wild_bootstrap}
 \title{Wild Bootstrap for LME models}
 \usage{
-\method{wild_bootstrap}{lmerMod}(model, .f, B, hccme = c("hc2", "hc3"), aux.dist = c("f1", "f2"))
+\method{wild_bootstrap}{lmerMod}(
+  model,
+  .f,
+  B,
+  hccme = c("hc2", "hc3"),
+  aux.dist = c("mammen", "rademacher", "norm", "webb", "gamma"),
+  .refit = TRUE
+)
 
-\method{wild_bootstrap}{lme}(model, .f, B, hccme = c("hc2", "hc3"), aux.dist = c("f1", "f2"))
+\method{wild_bootstrap}{lme}(
+  model,
+  .f,
+  B,
+  hccme = c("hc2", "hc3"),
+  aux.dist = c("mammen", "rademacher", "norm", "webb", "gamma"),
+  .refit = TRUE
+)
 
-wild_bootstrap(model, .f, B, hccme, aux.dist)
+wild_bootstrap(model, .f, B, hccme, aux.dist, .refit = TRUE)
 }
 \arguments{
 \item{model}{The model object you wish to bootstrap.}
@@ -23,8 +37,13 @@ wild_bootstrap(model, .f, B, hccme, aux.dist)
 \item{hccme}{either \code{"hc2"} or \code{"hc3"}, indicating which 
 heteroscedasticity consistent covariance matrix estimator to use.}
 
-\item{aux.dist}{either \code{"f1"} or \code{"f2"} indicating which auxiliary 
+\item{aux.dist}{one of \code{"mammen"}, \code{"rademacher"}, \code{"norm"}, 
+\code{"webb"}, or \code{"gamma"} indicating which auxiliary 
 distribution to draw the errors from}
+
+\item{.refit}{a logical value indicating whether the model should be refit to 
+the bootstrap resample, or if the simulated bootstrap resample should be 
+returned. Defaults to \code{TRUE}.}
 }
 \value{
 The returned value is an object of class "lmeresamp".

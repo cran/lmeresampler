@@ -1,3 +1,23 @@
+# bootstrap_resample.merMod <- function(model, type, B, resample, reb_type, hccme, 
+#                                aux.dist, orig_data = NULL) {
+#   
+#   if(type == "parametric") {
+#     ystar <- simulate(model, nsim = B, na.action = na.exclude)
+#   }
+#   
+#   if(type == "cases") {
+#     prep <- prep_cases.merMod(model = model, resample = resample, orig_data = orig_data)
+#   }
+#   
+#   if(type == "residual") {
+#     
+#   }
+#   
+#   
+# }
+
+
+
 #' Case resampler for mixed models
 #' @keywords internal
 #' @noRd
@@ -37,9 +57,11 @@
 }
 
 
-.resample_refit.cases <- function(model, .f, dat, cluster, resample){
+.resample_refit.cases <- function(model, .f, dat, cluster, resample, .refit){
   resamp_data <- .resamp.cases(dat, cluster, resample)
   error <- NULL
+  
+  if(!.refit) return(resamp_data)
   
   if(inherits(model, "lmerMod")){
     # Refit the model and apply '.f' to it using map
@@ -60,7 +82,12 @@
     tstar <- .f(tstar)
   } else if(inherits(model, "glmerMod")) {
     form <- update(model@call$formula, y ~ .)
-    colnames(resamp_data)[1] <- "y"
+    y_idx <- colnames(resamp_data) == getResponseFromFormula(model)
+    if(sum(y_idx) > 0) {
+      colnames(resamp_data)[y_idx] <- "y"
+    } else {
+      colnames(resamp_data)[1] <- "y"
+    }
     fam  <- family(model)
     
     f1 <- factory(
@@ -126,7 +153,8 @@
                            flist, n.lev){
   
   # Sample from auxillary distribution
-  if(aux.dist == "f1") {
+  # Mammen distribution
+  if(aux.dist == "mammen") { 
     prob <- (sqrt(5) + 1) / (2 * sqrt(5))
     w <- sample(
       c(-(sqrt(5) - 1) / 2, (sqrt(5) + 1) / 2), 
@@ -136,8 +164,28 @@
     )
   } 
   
-  if(aux.dist == "f2") {
+  # Rademacher distribution
+  if(aux.dist == "rademacher") {
     w <- sample(c(1, -1), size = n.lev, replace = TRUE)
+  }
+  
+  # Standard normal
+  if(aux.dist == "norm") {
+    w <- rnorm(n = n.lev)
+  }
+  
+  # Webb's 6-point distribution
+  if(aux.dist == "webb") {
+    w <- sample(
+      c(sqrt(3/2), 1, sqrt(1/2), -sqrt(3/2), -1, -sqrt(1/2)),
+      size = n.lev,
+      replace = TRUE
+    )
+  }
+  
+  # Recentered Gamma(4, scale = 1/2) -- Liu (1988)
+  if(aux.dist == "gamma") {
+    w <- rgamma(n = n.lev, shape = 4, scale = 1/2) - 2
   }
   
   # Calc. bootstrap y
