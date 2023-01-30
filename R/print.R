@@ -39,7 +39,10 @@ print.lmeresamp <- function(x, ci = FALSE, ...){
 #' Print table of coefficients produced by \code{bootstrap_pvals}.
 #' 
 #' @param x the coef_tbl object to print
-print.coef_tbl <- function(x) {
+#' @method print coef_tbl
+#' @param ... not used
+#' @export 
+print.coef_tbl <- function(x, ...) {
   cat(paste("Bootstrap type:", x$type, "\n"))
   cat(paste("\n"))
   cat(paste("Number of resamples:", x$B, "\n"))

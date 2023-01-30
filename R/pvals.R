@@ -1,5 +1,6 @@
 #' @title Calculate Bootstrap p-values for fixed effects
 #' 
+#' @description
 #' Perform bootstrap tests based on the t-statistic for each
 #' fixed effect in order to calculate approximate p-values.
 #' 
@@ -75,7 +76,7 @@ bootstrap_pvals.merMod <- function(model, type, B, resample = NULL,
     } else{
       boot_ts <- unlist(refit_merMod(gen_data, model, .f = extract_t)$tstar)
     }
-    
+    boot_ts <- boot_ts - mean(boot_ts, na.rm = TRUE)
     pvals[i] <- (sum(abs(boot_ts) >= abs(tstats[i])) + 1) / (B + 1)
   }
   
@@ -127,6 +128,7 @@ bootstrap_pvals.lme <- function(model, type, B, resample = NULL,
         purrr::map_dbl(~extract_t(.x))
     }
     
+    boot_ts <- boot_ts - mean(boot_ts, na.rm = TRUE)
     pvals[i] <- (sum(abs(boot_ts) >= abs(tstats[i])) + 1) / (B + 1)
   }
   

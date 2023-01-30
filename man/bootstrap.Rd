@@ -17,7 +17,8 @@
   hccme,
   aux.dist,
   orig_data = NULL,
-  .refit = TRUE
+  .refit = TRUE,
+  rbootnoise = 0
 )
 
 \method{bootstrap}{lme}(
@@ -30,7 +31,8 @@
   hccme,
   aux.dist,
   orig_data = NULL,
-  .refit = TRUE
+  .refit = TRUE,
+  rbootnoise = 0
 )
 
 bootstrap(
@@ -43,7 +45,8 @@ bootstrap(
   hccme = NULL,
   aux.dist = NULL,
   orig_data = NULL,
-  .refit = TRUE
+  .refit = TRUE,
+  rbootnoise = 0
 )
 }
 \arguments{
@@ -81,6 +84,17 @@ and the case bootstrap is used.}
 \item{.refit}{a logical value indicating whether the model should be refit to 
 the bootstrap resample, or if the simulated bootstrap resample should be 
 returned. Defaults to \code{TRUE}.}
+
+\item{rbootnoise}{a numeric value between 0-1 indicating the strength of
+technical 2-level noise added in relation to the 1-level variation (in
+standard deviations) during residual bootstrapping. Minuscule noise, such
+as \code{rbootnoise = 0.0001}, can be used to avoid errors with singular
+matrices when exactly the same values are replicated during the
+bootstrapping, or when the model being processed fails to return any
+2-level variation. Currently applicable only with \code{lme4::lmer}
+models. The feature has been tested with 2-level random-intercept models
+with predictors. Defaults to \code{0} (i.e. the feature is not used by
+default).}
 }
 \value{
 The returned value is an object of class "lmeresamp". This is a list
@@ -91,7 +105,7 @@ with the following elements:
 \item \code{model}: the fitted model object
 \item \code{.f}: the function call
 \item \code{replicates}: a \eqn{B \times p} data frame of bootstrap values for each of the p model parameters,
-\item \code{stats}: a tibble containing the \]code{observed}, \code{rep.mean} (bootstrap mean), 
+\item \code{stats}: a tibble containing the \code{observed}, \code{rep.mean} (bootstrap mean), 
 \code{se} (bootstrap standard error), and \code{bias} values for each model parameter,
 \item \code{B}: the number of bootstrap resamples performed
 \item \code{data}: the data with which the model was fit
