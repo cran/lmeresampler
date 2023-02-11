@@ -1,6 +1,6 @@
 Package: lmeresampler
 Title: Bootstrap Methods for Nested Linear Mixed-Effects Models
-Version: 0.2.3
+Version: 0.2.4
 Authors@R: c(person("Adam", "Loy", email = "loyad01@gmail.com",
     role = c("aut", "cre"), comment = c(ORCID = "0000-0002-5780-4611")), 
     person("Spenser", "Steele", role = "aut"), 
@@ -25,10 +25,10 @@ RoxygenNote: 7.2.1
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2023-01-30 22:03:37 UTC; aloy
+Packaged: 2023-02-10 19:39:29 UTC; aloy
 Author: Adam Loy [aut, cre] (<https://orcid.org/0000-0002-5780-4611>),
   Spenser Steele [aut],
   Jenna Korobova [aut]
 Maintainer: Adam Loy <loyad01@gmail.com>
 Repository: CRAN
-Date/Publication: 2023-01-30 22:20:02 UTC
+Date/Publication: 2023-02-11 10:10:11 UTC

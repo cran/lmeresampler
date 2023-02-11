@@ -1,6 +1,6 @@
-5434a1b013a70275a5d0e876f532a0e1 *DESCRIPTION
+773da81239b2361a5b796a416d8d48d4 *DESCRIPTION
 330b73670129e3f937d931010f33e2da *NAMESPACE
-ff8abbbb08fa6c3d2334fa5323349f04 *NEWS
+9458a879ee055848fa17443debd4f441 *NEWS
 97a333993ab3a315d9ebe632cef60412 *R/bootstrap_lme4.R
 81f50dad8c0e0fe0dc5753a4ef347ab0 *R/bootstrap_nlme.R
 18af3feb3bb6b1c5d2f0e019c44191aa *R/combine_lmersamp.R
@@ -20,11 +20,11 @@ b5cce68185377aa17afa423e256e7353 *R/print.R
 0efb7f33a16a63696b2b7c5b491cb05d *R/setup.R
 a018ea59ae3793bae6acced72e7783d9 *R/summary.R
 b56ff2b193ecba52f9ec7f3b10cca008 *R/utils-pipe.R
-b285d868b04822e774f560c3e14220f1 *README.md
+9f4e202e1d39596481d4cb9f39020f55 *README.md
 a2c2e00946679ab2cce82b4d2606b69a *build/vignette.rds
 14947f23fcebd35ecc7225e65c53c242 *data/jsp728.RData
 f440376592b83bad6215a23433a8732f *inst/doc/lmeresampler-vignette.Rmd
-7e904a2bbf7bf6ca583afe26d51a88cd *inst/doc/lmeresampler-vignette.html
+d41a8df1dec520e805d1ad498fd63b3e *inst/doc/lmeresampler-vignette.html
 01354023dcddaa4a89b190ade5cd484e *inst/image/FINAL_HEX_nobackground.png
 a94c2a042b45102a5ea0498fdcc53c20 *man/bootstrap.Rd
 7bedf07db0c9d21c2e27b7bdbdc456e8 *man/bootstrap_pvals.Rd
@@ -52,7 +52,7 @@ c461dfcce7dfcb25cebeb771a6d9c09b *tests/testthat/reference_data_for_rbootnoise_t
 57c19c340c8d155be466b26d25ea2495 *tests/testthat/test-case-nlme.R
 7f26b770847f894a834e0d85fa330ef5 *tests/testthat/test-parametric-lme4.R
 79858b5f2a32df5696a4226501c97dc0 *tests/testthat/test-parametric-nlme.R
-9b7e0ec38d77743dcb58976ca6051d24 *tests/testthat/test-rbootnoise.R
+ff04f5856d886b63dca872147f1e9fad *tests/testthat/test-rbootnoise.R
 b2f232d3939ad2198841562f2b041056 *tests/testthat/test-reb-lme4.R
 1a17510744f72a024404e5fd57051f23 *tests/testthat/test-reb-nlme.R
 f5d8eb2f7626f55973db002f22587e38 *tests/testthat/test-resid-lme4.R
